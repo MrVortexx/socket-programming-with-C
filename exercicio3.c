@@ -50,6 +50,7 @@ int main (int argc, char *argv[]){
 	FD_SET(server, &sockets);
  
 	char buffer[LENGTH];
+	int total_connections = 0;
 
 	while (1){
 		fd_set copy = sockets;
@@ -57,20 +58,35 @@ int main (int argc, char *argv[]){
 		for(int i = 0; i<FD_SETSIZE; i++){
 
 			if(FD_ISSET(i, &copy)){
-				
+				//new socket connections
 				if (server == i){
 					new_socket = accept(server, (struct sockaddr *)&address, (socklen_t*)&addrlength);
 
-					FD_SET(new_socket, &sockets);
-					printf ("you have a new connection\n");
-
-					send(new_socket, "Welcome to our Server!", LENGTH, 0);
- 
-				}else {
+						if(total_connections>=10){
+							send(new_socket, "You are trying to connect in a full server...", LENGTH, 0);
+							printf("someone try to connect, but you server are full..");	
+						}else{
+							total_connections ++;
+							FD_SET(new_socket, &sockets);
+							printf ("you have a new connection.\n Now you have %i connections.\n", total_connections);
+							send(new_socket, "Connected", LENGTH, 0);
+						 }
+		 			//existing socket sending informations
+				}else {	
+						
 					recv(i, buffer, LENGTH,0);
-					send(i, "OK", LENGTH, 0);
-		        	printf ("\nclient send a message: %s\n", buffer);
-				
+					
+					if(strcmp(buffer, "HELLO")!= 0){
+									send(i, " You only can send Hello, desconecting...",LENGTH,0);	
+						FD_CLR(i, &sockets);
+						total_connections --;
+						printf("A socket has ben sended a wrong message, so he was disconnected.\n Now you have %i connections",total_connections );
+						close(i);
+
+					}else{
+						send(i, "OK", LENGTH, 0);
+		        		printf ("Message acepted! client send a message: %s\n", buffer);
+					}
 				  }	
 			}		
 		}
