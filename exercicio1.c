@@ -8,7 +8,7 @@
 #include <netinet/in.h> 
 #include <sys/time.h>
  
-#define ADDRESS "127.0.0.1"
+ 
 #define PORT 8080
 #define LENGTH 1024
 
@@ -56,19 +56,21 @@ int main (int argc, char *argv[]){
 		activity = select (FD_SETSIZE, &copy, NULL, NULL, NULL);
 		for(int i = 0; i<FD_SETSIZE; i++){
 
-			if(FD_ISSET(i, &sockets)){
+			if(FD_ISSET(i, &copy)){
 				
 				if (server == i){
 					new_socket = accept(server, (struct sockaddr *)&address, (socklen_t*)&addrlength);
-					printf ("you have a new connection");
+
 					FD_SET(new_socket, &sockets);
+					printf ("you have a new connection\n");
+
 					send(new_socket, "Welcome to our Server!", LENGTH, 0);
  
 				}else {
-				 	memset(buffer, 0x0, LENGTH);
 					recv(i, buffer, LENGTH,0);
-		        	printf ("client send a message: %s\n", buffer);
-					
+					send(i, "OK", LENGTH, 0);
+		        	printf ("\nclient send a message: %s\n", buffer);
+				
 				  }	
 			}		
 		}
