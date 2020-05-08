@@ -91,8 +91,7 @@ void show_ips(ip_list* list){
 	for(i = 0; i < list->total_ips; i++){
 		printf("%s \n", list->ip_in_list[i].ip);
 	}
-		printf("%s aaaaaaaaaaaaaa", list->ip_in_list[i].ip);
-}
+ }
 
 int main (int argc, char *argv[]){
 
