@@ -25,7 +25,7 @@ int main (int argc, char *argv[]){
 	}
 	
 	    if( (setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt))) ==  -1 ){
-        perror("setsockopt");
+        printf(" error in setsockopt...");
         exit(EXIT_FAILURE);
     }
 	
